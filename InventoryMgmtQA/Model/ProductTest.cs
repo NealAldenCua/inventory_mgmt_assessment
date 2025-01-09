@@ -45,5 +45,97 @@ namespace InventoryMgmtQA.Model
         }
 
         // add more test cases here
+
+        [TestMethod]
+        public void TestAddProductNameMissing()
+        {
+            Product product = new()
+            {
+                Name = null, // Name is missing
+                QuantityInStock = 1,
+                Price = 1.0M
+            };
+
+            var results = new List<ValidationResult>();
+            var context = new ValidationContext(product, null, null);
+            bool isProductValid = Validator.TryValidateObject(product, context, results, true);
+
+            Assert.IsFalse(isProductValid);
+        }
+
+        [TestMethod]
+        public void TestAddProductQuantityNegative()
+        {
+            Product product = new()
+            {
+                Name = "TestProduct",
+                QuantityInStock = -1, // Negative quantity
+                Price = 1.0M
+            };
+
+            var results = new List<ValidationResult>();
+            var context = new ValidationContext(product, null, null);
+            bool isProductValid = Validator.TryValidateObject(product, context, results, true);
+
+            Assert.IsFalse(isProductValid);
+        }
+
+        [TestMethod]
+        public void TestAddProductQuantityZero()
+        {
+            Product product = new()
+            {
+                Name = "TestProduct",
+                QuantityInStock = 0, // Zero quantity
+                Price = 1.0M
+            };
+
+            var results = new List<ValidationResult>();
+            var context = new ValidationContext(product, null, null);
+            bool isProductValid = Validator.TryValidateObject(product, context, results, true);
+
+            Assert.IsTrue(isProductValid);
+        }
+
+        [TestMethod]
+        public void TestAddProductPriceZero()
+        {
+            Product product = new()
+            {
+                Name = "TestProduct",
+                QuantityInStock = 1,
+                Price = 0.0M // Zero price
+            };
+
+            var results = new List<ValidationResult>();
+            var context = new ValidationContext(product, null, null);
+            bool isProductValid = Validator.TryValidateObject(product, context, results, true);
+
+            Assert.IsTrue(isProductValid); // Assuming zero price is allowed
+        }
+
+        [TestMethod]
+        public void TestAddProductQuantityWithSpecialCharacters()
+        {
+            // This case simulates input validation for numeric fields that might be entered as strings.
+            string quantityInput = "1A"; // Simulate user input with special character
+
+            int parsedQuantity;
+            bool isParsed = int.TryParse(quantityInput, out parsedQuantity);
+
+            Assert.IsFalse(isParsed);
+        }
+
+        [TestMethod]
+        public void TestAddProductPriceWithSpecialCharacters()
+        {
+            // Simulate entering price as a string with special characters and trying to parse it
+            string priceInput = "1.0$"; // Simulate user input with special character
+
+            decimal parsedPrice;
+            bool isParsed = decimal.TryParse(priceInput, out parsedPrice);
+
+            Assert.IsFalse(isParsed);
+        }
     }
 }
